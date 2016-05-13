@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# finds out followers given a twitter account
 # -------------------------------->
 use strict;
 use Net::Twitter;
@@ -44,6 +45,7 @@ sub main {
 sub status {
 	try {
 		&parseConf();
+		&connect();
 		my $status = $nt->rate_limit_status;
 		print Dumper $status;
 	} catch {
