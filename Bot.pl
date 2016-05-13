@@ -10,10 +10,6 @@ use Getopt::Std;
 use YAML::XS 'LoadFile';
 use Scalar::Util 'blessed';
 use Try::Tiny;
-use Data::Dumper;
-use Log::Log4perl qw(:easy);
-Log::Log4perl->easy_init($ERROR);
-
 
 use vars qw/$nt $consumer_key $consumer_secret $token $token_secret %options/;
 
