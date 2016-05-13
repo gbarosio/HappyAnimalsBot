@@ -1,7 +1,7 @@
-Abyssinian,https://en.wikipedia.org/wiki/Abyssinian_cat
-Adelie Penguin,https://en.wikipedia.org/wiki/Adelie_penguin
-Affenpinscher,https://en.wikipedia.org/wiki/Affenpinscher
-Afghan Hound,https://en.wikipedia.org/wiki/Afghan_Hound
+#Cats #Abyssinian, check them here https://en.wikipedia.org/wiki/Abyssinian_cat
+Theres always an #Adelie #Penguin round the corner,https://en.wikipedia.org/wiki/Adelie_penguin
+Better name these with their pet names! #Affenpinscher #dogs, https://en.wikipedia.org/wiki/Affenpinscher
+Nice haircut budy, #Afghan #Hound #dog, https://en.wikipedia.org/wiki/Afghan_Hound
 African Bush Elephant,https://en.wikipedia.org/wiki/African_bush_elephant
 African Civet,https://en.wikipedia.org/wiki/African_civet
 African Clawed Frog,https://en.wikipedia.org/wiki/African_clawed_frog
@@ -23,13 +23,13 @@ American Bulldog,https://en.wikipedia.org/wiki/American_Bulldog
 American Cocker Spaniel,https://en.wikipedia.org/wiki/American_Cocker_Spaniel
 American Coonhound,https://en.wikipedia.org/wiki/Coonhound
 American Eskimo Dog,https://en.wikipedia.org/wiki/American_Eskimo_Dog
-American Foxhound, 
-American Pit Bull Terrier
-American Staffordshire Terrier
-American Water Spaniel
-Anatolian Shepherd Dog
-Angelfish
-Ant
+American Foxhound, https://en.wikipedia.org/wiki/American_Foxhound
+American Pit Bull Terrier, https://en.wikipedia.org/wiki/American_Pit_Bull_Terrier
+American Staffordshire Terrier, https://en.wikipedia.org/wiki/American_Staffordshire_Terrier
+American Water Spaniel, https://en.wikipedia.org/wiki/American_Water_Spaniel
+Lovely smiles these dogs, #Anatolian #Shepherd #Dog, https://en.wikipedia.org/wiki/Anatolian_Shepherd
+A lovely #Angelfish, https://en.wikipedia.org/wiki/Atlantic_spadefish
+Have you ever heard about #Ants? Check them here https://en.wikipedia.org/wiki/Ant
 Anteater
 Antelope
 Appenzeller Dog
@@ -198,9 +198,9 @@ Eagle
 Earwig
 Eastern Gorilla
 Eastern Lowland Gorilla
-Echidna
-Edible Frog
-Egyptian Mau
+#Echidna are mammals, check them here: https://en.wikipedia.org/wiki/Echidna
+Edible Frogs, European frogs! https://en.wikipedia.org/wiki/Edible_frog
+Egyptian #Mau, or that lovely #cat in the piramids, https://en.wikipedia.org/wiki/Egyptian_Mau
 Electric Eel
 Elephant
 Elephant Seal
@@ -395,11 +395,11 @@ Newt
 Nightingale
 Norfolk Terrier
 Norwegian Forest
-Numbat
-Nurse Shark
-Ocelot
-Octopus
-Okapi
+#Numbats, from Australia, are endangered! https://en.wikipedia.org/wiki/Numbat
+Nurse #Shark can reach a length of 3.08 m (10.1 ft), https://en.wikipedia.org/wiki/Nurse_shark
+#Ocelots are beautiful! https://en.wikipedia.org/wiki/Ocelot
+#Octopus, from the Animalia Kingdom! https://en.wikipedia.org/wiki/Octopus
+#Okapi, these are a rare mix, but still lovely animals, https://en.wikipedia.org/wiki/Okapi
 Old English Sheepdog
 Olm
 Opossum
