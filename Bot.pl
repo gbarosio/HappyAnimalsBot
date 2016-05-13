@@ -1,26 +1,29 @@
 #!/usr/bin/perl
 # TODO:
-# -> Implement YAML conf parser
 # -> Setup connection to Twitter only when everthing is ready. 
 # -> Setup Getopt::Std
 # -> Optimize main algo
 
 #use strict;
 use Net::Twitter;
+use Getopt::Std;
 use YAML::XS 'LoadFile';
 use Scalar::Util 'blessed';
 use Try::Tiny;
 use Data::Dumper;
-use DBI;
-use vars qw/$nt $consumer_key $consumer_secret $token $token_secret/;
-
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init($ERROR);
 
-my $quote = $ARGV[0];
 
-&parseConf();
-&connect();
+use vars qw/$nt $consumer_key $consumer_secret $token $token_secret %options/;
+
+getopts('q:',\%options);
+
+if (defined $options{q}) {
+	main($options{q});
+} else {
+	main();
+}
 
 sub parseConf {
 	my $config = LoadFile('conf.yml');
@@ -46,22 +49,30 @@ sub connect {
 
 }
 
-if ($quote) {
-	main($quote);
-} else {
-	main();
-}
 
 
 sub main {
+	my $quote = $_[0];
+
 	my ($text,$result) = (undef,undef);
 
 	if ($quote) {
-		$result = $nt->update($quote);
+		try {
+			&parseConf;
+			&connect();
+			$result = $nt->update($quote);
+		} catch {
+
+		}
 	} else  {
 		$text = getText();
-		$result = $nt->update($text);
-		print "Not tweeted: $text\n";
+		try {
+			&parseConf;
+			&connect();
+			$result = $nt->update($text);
+		} catch {
+			
+		}
 	}
 }
 
