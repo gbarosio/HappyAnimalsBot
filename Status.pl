@@ -23,6 +23,7 @@ sub status {
 		print "Token: ". $status->{rate_limit_context}->{access_token}."\n";
 		print "Rate Limit Status: ".$status->{resources}->{application}->{'/application/rate_limit_status'}->{remaining}."\n";
 		print "Search limit status: ". $status->{resources}->{search}->{'/search/tweets'}->{remaining}."\n";
+		print "Followers / id status: ". $status->{resources}->{followers}->{'/followers/ids'}->{remaining}."\n";
 		#print Dumper $status;
 	} catch {
 		print "Error fetching status\n";
