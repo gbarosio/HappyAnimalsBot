@@ -10,35 +10,25 @@ use Try::Tiny;
 use Data::Dumper;
 use vars qw/$consumer_secret $consumer_key $token $token_secret %options $nt/;
 
-my $user_to_find = $ARGV[0];
+my $argument = $ARGV[0];
 
-my $next_cursor;
-my $previous_cursor;
-
-
-if ($user_to_find) {
-	main();
+if ($argument) {
+	search($argument);
 } else {
-	print "Missing parameter <user_to_look_up>\n";
+	die "Argument required at $0\n";
 }
 
-sub main {
-	&parseConf();
-	&connect();
-	my $cursor = -1;
-	my $followers_list;
-
+sub search {
 	try {
-		my $followers_list = $nt->followers_ids( {
-			screen_name => "$user_to_find",
-			cursor => "$cursor",
-		} );
+		&parseConf();
+		&connect();
+		my $status = $nt->search("$argument");
 
-		for my $status2 ( @{$followers_list->{ids}} ) {
-				print $status2."\n";
+		foreach my $e (@{ $status->{statuses} }) {
+ 			print "$e->{user}{screen_name}:  $e->{text}\n";
 		}
 	} catch {
-		print "Error at main\n";
+		print "Error searching\n";
 	}
 }
 

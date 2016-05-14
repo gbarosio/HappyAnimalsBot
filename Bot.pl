@@ -4,8 +4,9 @@
 # -> Setup Getopt::Std
 # -> Optimize main algo
 
-#use strict;
+use strict;
 use Net::Twitter;
+use Animals;
 use Getopt::Std;
 use YAML::XS 'LoadFile';
 use Scalar::Util 'blessed';
@@ -67,7 +68,7 @@ sub main {
 			&connect();
 			$result = $nt->update($text);
 		} catch {
-			
+			die "Error trying to connect at main() with no arguments\n";			
 		}
 	}
 }

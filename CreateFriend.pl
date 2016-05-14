@@ -10,35 +10,25 @@ use Try::Tiny;
 use Data::Dumper;
 use vars qw/$consumer_secret $consumer_key $token $token_secret %options $nt/;
 
-my $user_to_find = $ARGV[0];
+my $user_to_add = $ARGV[0];
 
 my $next_cursor;
 my $previous_cursor;
 
 
-if ($user_to_find) {
+if ($user_to_add) {
 	main();
-} else {
-	print "Missing parameter <user_to_look_up>\n";
 }
 
 sub main {
 	&parseConf();
 	&connect();
-	my $cursor = -1;
 	my $followers_list;
 
 	try {
-		my $followers_list = $nt->followers_ids( {
-			screen_name => "$user_to_find",
-			cursor => "$cursor",
-		} );
-
-		for my $status2 ( @{$followers_list->{ids}} ) {
-				print $status2."\n";
-		}
+		$nt->create_friend($user_to_add);
 	} catch {
-		print "Error at main\n";
+		print "Error creating friendship\n";
 	}
 }
 

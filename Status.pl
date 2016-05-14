@@ -8,37 +8,24 @@ use YAML::XS 'LoadFile';
 use Scalar::Util 'blessed';
 use Try::Tiny;
 use Data::Dumper;
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Sortkeys = 1;
 use vars qw/$consumer_secret $consumer_key $token $token_secret %options $nt/;
 
-my $user_to_find = $ARGV[0];
+status();
 
-my $next_cursor;
-my $previous_cursor;
-
-
-if ($user_to_find) {
-	main();
-} else {
-	print "Missing parameter <user_to_look_up>\n";
-}
-
-sub main {
-	&parseConf();
-	&connect();
-	my $cursor = -1;
-	my $followers_list;
-
+sub status {
 	try {
-		my $followers_list = $nt->followers_ids( {
-			screen_name => "$user_to_find",
-			cursor => "$cursor",
-		} );
+		&parseConf();
+		&connect();
+		my $status = $nt->rate_limit_status;
 
-		for my $status2 ( @{$followers_list->{ids}} ) {
-				print $status2."\n";
-		}
+		print "Token: ". $status->{rate_limit_context}->{access_token}."\n";
+		print "Rate Limit Status: ".$status->{resources}->{application}->{'/application/rate_limit_status'}->{remaining}."\n";
+		print "Search limit status: ". $status->{resources}->{search}->{'/search/tweets'}->{remaining}."\n";
+		#print Dumper $status;
 	} catch {
-		print "Error at main\n";
+		print "Error fetching status\n";
 	}
 }
 
@@ -50,6 +37,8 @@ sub connect {
 	      access_token        => $token,
 	      access_token_secret => $token_secret,
 	  );
+
+	print "Here\n";
 }
 
 sub parseConf {
