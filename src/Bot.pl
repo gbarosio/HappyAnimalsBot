@@ -1,18 +1,17 @@
 #!/usr/bin/perl
 # TODO:
-# -> Setup connection to Twitter only when everthing is ready. 
 # -> Setup Getopt::Std
 # -> Optimize main algo
 
 use strict;
 use Net::Twitter;
-use Animals;
+use DBI;
 use Getopt::Std;
 use YAML::XS 'LoadFile';
 use Scalar::Util 'blessed';
 use Try::Tiny;
 
-use vars qw/$nt $consumer_key $consumer_secret $token $token_secret %options/;
+use vars qw/$nt $consumer_key $consumer_secret $token $token_secret %options $dbh $dbname/;
 
 getopts('q:',\%options);
 
@@ -23,7 +22,14 @@ if (defined $options{q}) {
 }
 
 sub parseConf {
-	my $config = LoadFile('conf.yml');
+	my $config;
+
+	try {
+		$config = LoadFile('.conf.yml');
+	} catch {
+		die "could not open conf.yml\n";
+	};
+
 	$consumer_key  	= $config->{consumer_key}; 	
 	$consumer_secret 	= $config->{consumer_secret};
 	$token 		= $config->{access_token};
@@ -42,8 +48,14 @@ sub connect {
 		);
 	} catch {
 		die "Check connection\n";
-	}
+	};
 
+	try {
+		$dbname = "happyanimals";
+		$dbh = DBI->connect("dbi:Pg:dbname=$dbname;host=localhost","ha-rw" );
+	} catch {
+		die "Check database\n";
+	};
 }
 
 
@@ -53,32 +65,41 @@ sub main {
 
 	my ($text,$result) = (undef,undef);
 
-	if ($quote) {
-		try {
-			&parseConf;
-			&connect();
-			$result = $nt->update($quote);
-		} catch {
+	&parseConf;
+	&connect();
+	my ($animal,$quote)=getQuotes();
 
-		}
-	} else  {
-		$text = getText();
-		try {
-			&parseConf;
-			&connect();
-			$result = $nt->update($text);
-		} catch {
-			die "Error trying to connect at main() with no arguments\n";			
-		}
+	print "$animal,$quote\n";
+	$quote = "#$animal, $quote";
+	$result = $nt->update($quote);
+}
+
+sub getQuotes {
+	my $query = "SELECT a.name,q.post from animals a, quotes q where a.id=q.animal_id and  q.flag is not true ORDER BY RANDOM() LIMIT 1";
+
+	my $sth = $dbh->prepare($query);
+
+	$sth->execute();
+
+	my ($animal,$quote) = (undef,undef);
+
+	while(my $ref = $sth->fetchrow_hashref()) {
+		$animal = $ref->{name};
+		$quote  = $ref->{post};
 	}
+
+	if ($animal && $quote) {
+		return ($animal,$quote);
+	}
+
 }
 
 # Extracts a quote from a file, where a line represents each quote
 sub getText {
 	my $file = 'wikipages.out';
-	open FILE, "<$file" or die "Could not open $file: $!\n";
+	open FILE, "$file" or die "Could not open $file: $!\n";
 	my @array=<FILE>;
-	close FILE;
+#	close FILE;
 	my $randomline=$array[rand @array];
 	chomp $randomline;
 	return $randomline;
