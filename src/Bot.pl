@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 # TODO:
-# -> update quotes flag as true after tweeting
-# -> improve logging mechanisms
+# -> improve logging mechanisms (log4perl?)
 # -> Setup Getopt::Std
 # -> Optimize main algo
 
