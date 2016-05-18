@@ -36,7 +36,7 @@ sub main {
 	$quote = "#$animal, $quote";
 	$result = $nt->update($quote);
 
-	if ( updateQuotesAsFalse($id) && $result ) {
+	if ( updateQuotesAsTrue($id) && $result ) {
 		print "Tweet sent, quotes updated\n";
 		exit;
 	} else {
@@ -45,7 +45,7 @@ sub main {
 
 }
 
-sub updateQuotesAsFalse($) {
+sub updateQuotesAsTrue($) {
 
 	my $id  = $_[0];
 	die ("missing ID,cannot update\n") if !$id;
