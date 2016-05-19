@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 # TODO:
+# -> improve logging mechanisms (log4perl?)
 # -> Setup Getopt::Std
 # -> Optimize main algo
 
@@ -19,6 +20,69 @@ if (defined $options{q}) {
 	main($options{q});
 } else {
 	main();
+}
+
+sub main {
+	my $quote = $_[0];
+
+	my ($text,$result) = (undef,undef);
+
+	&parseConf;
+	&connect();
+	my ($animal,$quote,$id)=getQuotes();
+
+	print "$animal,$quote\n";
+	$quote = "#$animal, $quote";
+	$result = $nt->update($quote);
+
+	if ( updateQuotesAsTrue($id) && $result ) {
+		print "Tweet sent, quotes updated\n";
+		exit;
+	} else {
+		print "Tweet sent, quotes not updated\n";
+	}
+
+}
+
+sub updateQuotesAsTrue($) {
+
+	my $id  = $_[0];
+	die ("missing ID,cannot update\n") if !$id;
+	
+	my $query = "UPDATE quotes set flag = true where ID = $id";
+
+	print $query."\n";
+
+	my $sth = $dbh->prepare($query);
+	my @rows = $sth->execute();
+
+	if (@rows) {
+		print $#rows."<- rows\n";
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+sub getQuotes {
+	my $query = "SELECT a.name,q.id, q.post from animals a, quotes q where a.id=q.animal_id and  q.flag is not true ORDER BY RANDOM() LIMIT 1";
+
+	my $sth = $dbh->prepare($query);
+
+	$sth->execute();
+
+	my ($animal,$quote,$id) = (undef,undef,undef);
+
+	while(my $ref = $sth->fetchrow_hashref()) {
+		$animal = $ref->{name};
+		$id	= $ref->{id};
+		$quote  = $ref->{post};
+	}
+
+	if ($animal && $quote) {
+		return ($animal,$quote,$id);
+	}
+
 }
 
 sub parseConf {
@@ -57,6 +121,7 @@ sub connect {
 		die "Check database\n";
 	};
 }
+<<<<<<< HEAD
 
 
 
@@ -104,3 +169,5 @@ sub getText {
 	chomp $randomline;
 	return $randomline;
 }
+=======
+>>>>>>> 0e7a250bdb48bfc94b20fd633f27999532411f9f
