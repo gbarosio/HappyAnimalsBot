@@ -75,7 +75,7 @@ sub main {
 }
 
 sub getQuotes {
-	my $query = "SELECT a.name,q.post from animals a, quotes q where a.id=q.animal_id and  q.flag is not true ORDER BY RANDOM() LIMIT 1";
+	my $query = "SELECT a.name,q.post from animals a, quotes q where a.id=q.animal_id and  q.flag is false ORDER BY RANDOM() LIMIT 1";
 
 	my $sth = $dbh->prepare($query);
 

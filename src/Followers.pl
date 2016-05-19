@@ -3,24 +3,29 @@
 # -------------------------------->
 use strict;
 use Net::Twitter;
-use Animals;
+use DBI;
+use Getopt::Std;
 use YAML::XS 'LoadFile';
 use Scalar::Util 'blessed';
 use Try::Tiny;
 use Data::Dumper;
 use vars qw/$consumer_secret $consumer_key $token $token_secret %options $nt/;
 
-my $user_to_find = $ARGV[0];
+getopts('aif:',\%options);
+
+my $user_to_find 	= $options{f};
+
+print "User $user_to_find\n";
 
 my $next_cursor;
 my $previous_cursor;
-
 
 if ($user_to_find) {
 	main();
 } else {
 	print "Missing parameter <user_to_look_up>\n";
 }
+
 
 sub main {
 	&parseConf();
@@ -35,7 +40,10 @@ sub main {
 		} );
 
 		for my $status2 ( @{$followers_list->{ids}} ) {
-				print $status2."\n";
+				#print $status2."\n";
+				if ($options{i} ) {
+					print "INSERT INTO ...$status2\n";
+				}
 		}
 	} catch {
 		print "Error at main\n";
