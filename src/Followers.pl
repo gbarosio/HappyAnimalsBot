@@ -9,48 +9,39 @@ use YAML::XS 'LoadFile';
 use Scalar::Util 'blessed';
 use Try::Tiny;
 use Data::Dumper;
-use vars qw/$consumer_secret $consumer_key $token $token_secret %options $nt/;
+use vars qw/$consumer_secret $consumer_key $token $token_secret %options $nt $dbh $dbname $next_cursor $previous_cursor/;
 
-getopts('aif:',\%options);
+getopts('aif:b:',\%options);
 
 my $user_to_find 	= $options{f};
-
-print "User $user_to_find\n";
-
-my $next_cursor;
-my $previous_cursor;
+my $batch_uuid 		= $options{b};
 
 if ($user_to_find) {
-	main();
+	checkFollowers();
 } else {
 	print "Missing parameter <user_to_look_up>\n";
 }
 
-
-sub main {
+sub checkFollowers {
 	&parseConf();
 	&connect();
-	my $cursor = -1;
-	my $followers_list;
 
-	try {
-		my $followers_list = $nt->followers_ids( {
-			screen_name => "$user_to_find",
-			cursor => "$cursor",
-		} );
+ 	my @ids;
+	# iterate over twitter's cursor in case of > 5000 followers
+ 	for ( my $cursor = -1, my $r; $cursor; $cursor = $r->{next_cursor} ) {
+     		$r = $nt->followers_ids({ screen_name => "$user_to_find",cursor => $cursor });
+     		push @ids, @{ $r->{ids} };
+ 	}
 
-		for my $status2 ( @{$followers_list->{ids}} ) {
-				#print $status2."\n";
-				if ($options{i} ) {
-					print "INSERT INTO ...$status2\n";
-				}
-		}
-	} catch {
-		print "Error at main\n";
+	foreach (@ids) {
+		# one at a time
+		insertFollowers($user_to_find,$_);	
 	}
 }
 
 sub connect {
+	$dbname = "happyanimals";
+	try {
 	$nt = Net::Twitter->new(
 	      traits   => [qw/API::RESTv1_1/],
 	      consumer_key        => $consumer_key,
@@ -58,6 +49,16 @@ sub connect {
 	      access_token        => $token,
 	      access_token_secret => $token_secret,
 	  );
+	} catch {
+		warn "Check $_\n";
+	};
+	try {
+		$dbname = "happyanimals";
+		$dbh = DBI->connect("dbi:Pg:dbname=$dbname;host=localhost","ha-rw" );
+	} catch {
+		warn "Check database: $_\n";
+	};
+
 }
 
 sub parseConf {
@@ -66,4 +67,13 @@ sub parseConf {
 	$consumer_secret 	= $config->{consumer_secret};
 	$token 		= $config->{access_token};
 	$token_secret	= $config->{access_token_secret};
+}
+
+sub insertFollowers {
+	my $user_to_find = $_[0];
+	my $status2 = $_[1];
+
+	my $query = "INSERT INTO followers (screen_name,follower_id,batch_uuid) values ('$user_to_find',$status2,'faea0212-1f5e-11e6-a83c-4f9cb81c727e')";
+	my $sth = $dbh->prepare($query);
+	my @rows = $sth->execute();
 }
