@@ -23,20 +23,31 @@ if ($user_to_find) {
 }
 
 sub checkFollowers {
+	print "Parsing conf\n";
 	&parseConf();
+	print "Connecting to Twitter and database\n";
 	&connect();
 
+	print "Fetching batch UUID";
+	my $batch_uuid = getUUID($user_to_find);	
  	my @ids;
 	# iterate over twitter's cursor in case of > 5000 followers
+	print "Iterating over followers\n";
  	for ( my $cursor = -1, my $r; $cursor; $cursor = $r->{next_cursor} ) {
      		$r = $nt->followers_ids({ screen_name => "$user_to_find",cursor => $cursor });
      		push @ids, @{ $r->{ids} };
  	}
 
+	print "Inserting [$#ids] followers\n";
 	foreach (@ids) {
 		# one at a time
-		insertFollowers($user_to_find,$_);	
+		insertFollowers($user_to_find,$_,$batch_uuid);	
 	}
+	print "Updating batch run to true\n";
+	updateBatch($batch_uuid);
+
+	sleep(2);
+	print "Done\n";
 }
 
 sub connect {
@@ -72,8 +83,38 @@ sub parseConf {
 sub insertFollowers {
 	my $user_to_find = $_[0];
 	my $status2 = $_[1];
+	my $batch_uuid = $_[2];
 
-	my $query = "INSERT INTO followers (screen_name,follower_id,batch_uuid) values ('$user_to_find',$status2,'faea0212-1f5e-11e6-a83c-4f9cb81c727e')";
+	my $query = "INSERT INTO followers (screen_name,follower_id,batch_uuid) values ('$user_to_find',$status2,'$batch_uuid')";
 	my $sth = $dbh->prepare($query);
 	my @rows = $sth->execute();
+}
+
+sub getUUID {
+	my $user_to_find = $_[0];
+	my $insert = "INSERT INTO batch (screen_name,run) values ('$user_to_find', false)";
+	my $sth = $dbh->prepare($insert);
+	my @rows = $sth->execute();
+
+	my $query = "SELECT batch_uuid FROM batch WHERE screen_name='$user_to_find' and run = false";
+	my $sth = $dbh->prepare($query);
+
+	my @rows = $sth->execute();
+	my $return = undef;
+	my $return_uuid = undef;
+
+	while ( ($return_uuid ) = $sth->fetchrow() ) {
+		$return = $return_uuid;		
+	}
+
+	print "UUID: [$return]\n";
+	return $return;
+}
+
+sub updateBatch {
+	my $batch_uuid = $_[0];
+	my $update = "UPDATE batch set run = true where batch_uuid = '$batch_uuid'";
+	print "$update\n";	
+	my $sth = $dbh->prepare($update);	
+	$sth->execute();
 }
