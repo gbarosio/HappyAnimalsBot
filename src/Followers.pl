@@ -65,7 +65,7 @@ sub connect {
 	};
 	try {
 		$dbname = "happyanimals";
-		$dbh = DBI->connect("dbi:Pg:dbname=$dbname;host=localhost","ha-rw" );
+		$dbh = DBI->connect("dbi:Pg:dbname=$dbname;host=localhost","gbarosio","qwe123" );
 	} catch {
 		warn "Check database: $_\n";
 	};
@@ -73,7 +73,7 @@ sub connect {
 }
 
 sub parseConf {
-	my $config = LoadFile('.conf.yml');
+	my $config = LoadFile('/home/gbarosio/HappyAnimalsBot/src/.conf.yml');
 	$consumer_key  	= $config->{consumer_key}; 	
 	$consumer_secret 	= $config->{consumer_secret};
 	$token 		= $config->{access_token};
