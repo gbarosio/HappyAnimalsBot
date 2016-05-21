@@ -3,6 +3,7 @@
 # -------------------------------->
 use strict;
 use Net::Twitter;
+use List::Compare;
 use DBI;
 use Getopt::Std;
 use YAML::XS 'LoadFile';
@@ -16,3 +17,76 @@ getopts('s:t:',\%options);
 print "Source batch: $options{s}\n";
 print "Target batch: $options{t}\n";
 
+my $source = $options{s};
+my $target = $options{t};
+
+&parseConf();
+&connect();
+&compare($source,$target);
+
+sub compare {
+	my @followers_ori = undef;
+	my @followers_new = undef;
+
+	my $query = "SELECT follower_id FROM followers WHERE batch_uuid = '$source'";
+	my $sth = $dbh->prepare($query);
+	my @rows = $sth->execute();
+
+	my ($follower_id);
+
+	$sth->bind_col(1,\$follower_id);
+
+	while ($sth->fetch) {
+		push(@followers_ori,$follower_id);
+	}
+
+	my $query = "SELECT follower_Id FROM followers WHERE batch_uuid ='$target'";
+	my $sth	= $dbh->prepare($query);
+	my @rows = $sth->execute();
+
+	$follower_id = undef;
+	$sth->bind_col(1,\$follower_id);
+
+	while ($sth->fetch) {
+		push(@followers_new,$follower_id);
+	}
+
+	my $lc = List::Compare->new('-u',\@followers_ori,\@followers_new);
+
+	my @Ronly = $lc->get_complement;
+	print "Lonly $#Ronly\n";
+	foreach (@Ronly) {
+		print "$_\n";
+	}
+}
+
+
+sub connect {
+	$dbname = "happyanimals";
+	try {
+	$nt = Net::Twitter->new(
+	      traits   => [qw/API::RESTv1_1/],
+	      consumer_key        => $consumer_key,
+	      consumer_secret     => $consumer_secret,
+	      access_token        => $token,
+	      access_token_secret => $token_secret,
+	  );
+	} catch {
+		warn "Check $_\n";
+	};
+	try {
+		$dbname = "happyanimals";
+		$dbh = DBI->connect("dbi:Pg:dbname=$dbname;host=localhost","gbarosio","qwe123" );
+	} catch {
+		warn "Check database: $_\n";
+	};
+
+}
+
+sub parseConf {
+	my $config = LoadFile('/home/gbarosio/HappyAnimalsBot/src/.conf.yml');
+	$consumer_key  	= $config->{consumer_key}; 	
+	$consumer_secret 	= $config->{consumer_secret};
+	$token 		= $config->{access_token};
+	$token_secret	= $config->{access_token_secret};
+}
