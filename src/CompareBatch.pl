@@ -53,11 +53,22 @@ sub compare {
 
 	my $lc = List::Compare->new('-u',\@followers_ori,\@followers_new);
 
+	my @Lonly = $lc->get_unique;
 	my @Ronly = $lc->get_complement;
-	print "Lonly $#Ronly\n";
-	foreach (@Ronly) {
-		print "$_\n";
+
+	print "Original batch size: $#followers_ori\n";
+	print "Lonly $#Lonly\n";
+	foreach (@Lonly) {
+		print "Left: $_\n";
 	}
+
+	print "Target batch size: $#followers_new\n";
+	print "Ronly $#Ronly\n";
+	foreach (@Ronly) {
+		print "Joined: $_\n";
+	}
+
+
 }
 
 

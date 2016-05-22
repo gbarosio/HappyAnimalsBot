@@ -10,11 +10,13 @@ use Try::Tiny;
 use Data::Dumper;
 use vars qw/$consumer_secret $consumer_key $token $token_secret %options $nt/;
 
-getopts('U:u:',\%options);
+getopts('hU:u:',\%options);
 
+my $help 		= $options{h};
 my $first_user 		= $options{U};
 my $second_user		= $options{u};
 
+help() if ($help || (!$first_user && !$second_user));
 if ($first_user && $second_user) {
 	main();
 }
@@ -38,7 +40,7 @@ sub main {
 	
 
 	my $id = $var->{relationship}->{source}->{id_str};
-	my $can_dm = $second_user = $var->{relationship}->{source}->{can_dm};
+	my $can_dm = $var->{relationship}->{source}->{can_dm};
 	my $notifications_enabled =  $var->{relationship}->{source}->{notifications_enabled};
 	
 }
@@ -59,4 +61,8 @@ sub parseConf {
 	$consumer_secret 	= $config->{consumer_secret};
 	$token 		= $config->{access_token};
 	$token_secret	= $config->{access_token_secret};
+}
+
+sub help {
+	print "$0 -U first -u second\n";
 }

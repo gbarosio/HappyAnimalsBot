@@ -3,7 +3,6 @@
 # -------------------------------->
 use strict;
 use Net::Twitter;
-use Animals;
 use YAML::XS 'LoadFile';
 use Scalar::Util 'blessed';
 use Try::Tiny;
